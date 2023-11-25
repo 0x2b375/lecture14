@@ -1,63 +1,59 @@
 let express = require("express");
 let router = express.Router();
 // Student Model
-let studentSchema = require("../models/Student");
+let studentSchema = require("../models/Students");
+
 // CREATE Student
-router.route("/create-student").post((req, res, next) => {
-  studentSchema.create(req.body, (error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      console.log(data);
-      res.json(data);
-    }
-  });
+router.route("/create-student").post(async (req, res, next) => {
+  try {
+    const data = await studentSchema.create(req.body);
+    console.log(data);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
 });
+
 // READ Students
-router.route("/").get((req, res) => {
-  studentSchema.find((error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      res.json(data);
-    }
-  });
+router.route("/").get(async (req, res, next) => {
+  try {
+    const data = await studentSchema.find();
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
 });
+
 // Get Single Student
-router.route("/edit-student/:id").get((req, res) => {
-  studentSchema.findById(req.params.id, (error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      res.json(data);
-    }
-  });
+router.route("/edit-student/:id").get(async (req, res, next) => {
+  try {
+    const data = await studentSchema.findById(req.params.id);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
 });
+
 // Update Student
-router.route("/update-student/:id").put((req, res, next) => {
-  studentSchema.findByIdAndUpdate(
-    req.params.id,
-    {
-      $set: req.body,
-    },
-    (error, data) => {
-      if (error) {
-        return next(error);
-      } else {
-        res.json(data);
-        console.log("Student updated successfully !");
-      }
-    }
-  );
+router.route("/update-student/:id").put(async (req, res, next) => {
+  try {
+    const data = await studentSchema.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+    res.json(data);
+    console.log("Student updated successfully !");
+  } catch (error) {
+    next(error);
+  }
 });
+
 // Delete Student
-router.route("/delete-student/:id").delete((req, res, next) => {
-  studentSchema.findByIdAndRemove(req.params.id, (error, data) => {
-    if (error) {
-      return next(error);
-    } else {
-      console.log("Deleted successfully");
-    }
-  });
+router.route("/delete-student/:id").delete(async (req, res, next) => {
+  try {
+    const data = await studentSchema.findByIdAndRemove(req.params.id);
+    console.log("Deleted successfully");
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
 });
+
 module.exports = router;
